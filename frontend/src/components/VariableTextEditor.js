@@ -29,7 +29,7 @@ function escapeHTML(str) {
 function textToHTML(text) {
   if (!text) return '';
   return text
-    .replace(/\{\{([a-zA-Z_$][a-zA-Z0-9_$]*)\}\}/g, (_, name) =>
+    .replace(/\{\{\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\}\}/g, (_, name) =>
       `<span class="var-chip" contenteditable="false" data-var="${name}">${escapeHTML(name)}<span class="var-chip-x" data-remove="${name}">×</span></span>`
     )
     .replace(/\n/g, '<br>');
@@ -146,7 +146,7 @@ export const VariableTextEditor = ({ value, onChange, availableNodes = [], place
 
   // ── Convert a fully-typed {{varName}} in a text node to a chip ────────────
   const autoConvert = useCallback((textNode) => {
-    const COMPLETE = /\{\{([a-zA-Z_$][a-zA-Z0-9_$]*)\}\}/;
+    const COMPLETE = /\{\{\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\}\}/;
     const match = COMPLETE.exec(textNode.textContent);
     if (!match) return false;
 

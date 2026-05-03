@@ -26,7 +26,7 @@ import { labelStyle } from '../base/BaseNode';
 // ── Constants ─────────────────────────────────────────────────────────────────
 
 const COLOR     = '#f59e0b';
-const VAR_REGEX = /\{\{([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\}\}/g;
+const VAR_REGEX = /\{\{\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*\}\}/g;
 
 const HEADER_H  = 32;
 const BODY_PAD  = 10;

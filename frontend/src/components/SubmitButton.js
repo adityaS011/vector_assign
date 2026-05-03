@@ -6,8 +6,7 @@
 
 import { shallow } from 'zustand/shallow';
 import { usePipelineStore } from '../store/pipelineStore';
-
-const API_BASE_URL = 'http://localhost:8000';
+import { submitPipeline } from '../submit';
 
 const storeSelector = (s) => ({ nodes: s.nodes, edges: s.edges });
 
@@ -16,15 +15,7 @@ export const SubmitButton = () => {
 
   const handleSubmit = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/pipelines/parse`, {
-        method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ nodes, edges }),
-      });
-
-      if (!res.ok) throw new Error(`Server responded with ${res.status}`);
-
-      const { num_nodes, num_edges, is_dag } = await res.json();
+      const { num_nodes, num_edges, is_dag } = await submitPipeline(nodes, edges);
 
       alert(
         `Pipeline Analysis\n` +
