@@ -1,6 +1,6 @@
 # VectorShift Pipeline Builder
 
-A full-stack pipeline builder for the VectorShift frontend technical assessment. The app lets users drag workflow nodes onto a React Flow canvas, connect them, add dynamic variables in text nodes, and submit the pipeline to a FastAPI backend for DAG analysis.
+The app lets users drag workflow nodes onto a React Flow canvas, connect them, add dynamic variables in text nodes, and submit the pipeline to a FastAPI backend for DAG analysis.
 
 ## Features
 
