@@ -18,6 +18,32 @@ class Pipeline(BaseModel):
     edges: List[Dict[str, Any]]
 
 
+def valid_edges(nodes: List[Dict], edges: List[Dict]) -> List[Dict]:
+    node_ids = {n["id"] for n in nodes}
+    seen = set()
+    cleaned = []
+
+    for edge in edges:
+        src = edge.get("source")
+        tgt = edge.get("target")
+        if src not in node_ids or tgt not in node_ids:
+            continue
+
+        key = (
+            src,
+            edge.get("sourceHandle", ""),
+            tgt,
+            edge.get("targetHandle", ""),
+        )
+        if key in seen:
+            continue
+
+        seen.add(key)
+        cleaned.append(edge)
+
+    return cleaned
+
+
 def is_dag(nodes: List[Dict], edges: List[Dict]) -> bool:
     node_ids = {n["id"] for n in nodes}
     adj: Dict[str, List[str]] = {nid: [] for nid in node_ids}
@@ -53,8 +79,10 @@ def read_root():
 
 @app.post("/pipelines/parse")
 def parse_pipeline(pipeline: Pipeline):
+    edges = valid_edges(pipeline.nodes, pipeline.edges)
+
     return {
         "num_nodes": len(pipeline.nodes),
-        "num_edges": len(pipeline.edges),
-        "is_dag":    is_dag(pipeline.nodes, pipeline.edges),
+        "num_edges": len(edges),
+        "is_dag":    is_dag(pipeline.nodes, edges),
     }
