@@ -1,5 +1,7 @@
 # VectorShift Pipeline Builder
 
+<img width="1468" height="837" alt="Screenshot 2026-05-05 at 01 11 41" src="https://github.com/user-attachments/assets/a69f41dd-fdb3-42d8-85a0-69c24333f2ab" />
+
 The app lets users drag workflow nodes onto a React Flow canvas, connect them, add dynamic variables in text nodes, and submit the pipeline to a FastAPI backend for DAG analysis.
 
 ## Features
