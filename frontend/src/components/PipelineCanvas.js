@@ -23,8 +23,7 @@ const PRO_OPTIONS = { hideAttribution: true };
 const storeSelector = (s) => ({
   nodes:         s.nodes,
   edges:         s.edges,
-  getNodeID:     s.getNodeID,
-  addNode:       s.addNode,
+  createNode:    s.createNode,
   onNodesChange: s.onNodesChange,
   onEdgesChange: s.onEdgesChange,
   onConnect:     s.onConnect,
@@ -36,7 +35,7 @@ export const PipelineCanvas = () => {
   const wrapperRef  = useRef(null);
   const [rfInstance, setRfInstance] = useState(null);
 
-  const { nodes, edges, getNodeID, addNode, onNodesChange, onEdgesChange, onConnect } =
+  const { nodes, edges, createNode, onNodesChange, onEdgesChange, onConnect } =
     usePipelineStore(storeSelector, shallow);
 
   const onDrop = useCallback(
@@ -55,10 +54,9 @@ export const PipelineCanvas = () => {
         y: event.clientY - bounds.top,
       });
 
-      const nodeID = getNodeID(nodeType);
-      addNode({ id: nodeID, type: nodeType, position, data: { id: nodeID, nodeType } });
+      createNode(nodeType, position);
     },
-    [rfInstance, getNodeID, addNode]
+    [rfInstance, createNode]
   );
 
   const onDragOver = useCallback((event) => {

@@ -29,8 +29,9 @@
  *   • style    merged onto the Handle's inline style
  */
 
-import { Handle, Position, useReactFlow } from 'reactflow';
+import { Handle, Position } from 'reactflow';
 import { Modal } from 'antd';
+import { usePipelineStore } from '../../store/pipelineStore';
 
 // ── Shared style tokens ───────────────────────────────────────────────────────
 // Import these in any node file to keep form fields visually consistent.
@@ -81,7 +82,7 @@ export const BaseNode = ({
   width       = 220,
   style       = {},
 }) => {
-  const { setNodes, setEdges } = useReactFlow();
+  const deleteNode = usePipelineStore((s) => s.deleteNode);
 
   const onDelete = (e) => {
     e.stopPropagation();
@@ -91,10 +92,7 @@ export const BaseNode = ({
       okText:  'Delete',
       okButtonProps: { danger: true },
       cancelText: 'Cancel',
-      onOk: () => {
-        setNodes((nodes) => nodes.filter((n) => n.id !== id));
-        setEdges((edges) => edges.filter((e) => e.source !== id && e.target !== id));
-      },
+      onOk: () => deleteNode(id),
     });
   };
 

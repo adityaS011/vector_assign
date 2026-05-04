@@ -60,7 +60,12 @@ function computeWidth(text) {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export const TextNode = ({ id, data }) => {
-  const { setEdges, setNodes } = useReactFlow();
+  const { setEdges } = useReactFlow();
+
+  const { nodes, updateNodeField, deleteNode } = usePipelineStore(
+    (s) => ({ nodes: s.nodes, updateNodeField: s.updateNodeField, deleteNode: s.deleteNode }),
+    shallow
+  );
 
   const onDelete = (e) => {
     e.stopPropagation();
@@ -70,17 +75,9 @@ export const TextNode = ({ id, data }) => {
       okText:  'Delete',
       okButtonProps: { danger: true },
       cancelText: 'Cancel',
-      onOk: () => {
-        setNodes((nodes) => nodes.filter((n) => n.id !== id));
-        setEdges((edges) => edges.filter((e) => e.source !== id && e.target !== id));
-      },
+      onOk: () => deleteNode(id),
     });
   };
-
-  const { nodes, updateNodeField } = usePipelineStore(
-    (s) => ({ nodes: s.nodes, updateNodeField: s.updateNodeField }),
-    shallow
-  );
 
   const text = data?.text ?? '';
 

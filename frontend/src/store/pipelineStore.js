@@ -24,13 +24,19 @@ export const usePipelineStore = create(
   edges:        [],
   nodeCounters: {},   // { [nodeType]: count } — incremented per type
 
-  /** Returns a unique, human-readable ID for the given node type (e.g. input_0, text_1). */
+  /** Returns the smallest available ID for the given node type (e.g. input_0, text_1). */
   getNodeID: (type) => {
-    const counters  = { ...get().nodeCounters };
-    counters[type]  = (counters[type] ?? -1) + 1;   // 0-based
+    const prefix = NODE_TYPES[type]?.idPrefix ?? type;
+    const used = new Set(get().nodes.map((node) => node.id));
+    let next = 0;
+
+    while (used.has(`${prefix}_${next}`)) {
+      next += 1;
+    }
+
+    const counters = { ...get().nodeCounters, [type]: next };
     set({ nodeCounters: counters });
-    const prefix    = NODE_TYPES[type]?.idPrefix ?? type;
-    return `${prefix}_${counters[type]}`;
+    return `${prefix}_${next}`;
   },
 
   /** Adds a node to the canvas. */
@@ -38,8 +44,43 @@ export const usePipelineStore = create(
     set({ nodes: [...get().nodes, node] });
   },
 
-  onNodesChange: (changes) =>
-    set({ nodes: applyNodeChanges(changes, get().nodes) }),
+  /** Creates a node of the requested type, optionally at a specific canvas position. */
+  createNode: (type, position) => {
+    const id = get().getNodeID(type);
+    const fallbackOffset = get().nodes.length * 28;
+    const nodePosition = position || {
+      x: 120 + fallbackOffset,
+      y: 120 + fallbackOffset,
+    };
+
+    get().addNode({
+      id,
+      type,
+      position: nodePosition,
+      data: { id, nodeType: type },
+    });
+  },
+
+  /** Deletes a node and all edges connected to it. */
+  deleteNode: (nodeId) => {
+    set({
+      nodes: get().nodes.filter((node) => node.id !== nodeId),
+      edges: get().edges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId),
+    });
+  },
+
+  onNodesChange: (changes) => {
+    const removedIds = changes
+      .filter((change) => change.type === 'remove')
+      .map((change) => change.id);
+
+    set({
+      nodes: applyNodeChanges(changes, get().nodes),
+      edges: removedIds.length
+        ? get().edges.filter((edge) => !removedIds.includes(edge.source) && !removedIds.includes(edge.target))
+        : get().edges,
+    });
+  },
 
   onEdgesChange: (changes) =>
     set({ edges: applyEdgeChanges(changes, get().edges) }),
